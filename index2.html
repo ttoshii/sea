@@ -102,6 +102,7 @@ popup.remove();
 ////////////////////////////////////////////////////////////////////////////////
 
 });
+	map.addControl(geolocate);
         map.on('load', () => {
             geolocate.trigger();
         });
