@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>LIGHTSHIP様MAP</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.css" rel="stylesheet" />
+<style>
+	body { margin: 0; padding: 0; }
+	#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script>
+	mapboxgl.accessToken = 'pk.eyJ1IjoibGlnaHRzaGlwIiwiYSI6ImNrc2pvMmJudzJmemMydXM2OXhsYWd1bHcifQ.zsHwFsf8-oEtjepe61rX2Q';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/lightship/cksjob21j2i5g17tac3yyk67y',
+        center: [135.228596,34.7057429],
+        zoom: 10,
+        antialias: true
+    });
+
+
+    const geolocate = new mapboxgl.GeolocateControl({
+            positionOptions: {
+                enableHighAccuracy: true
+            },
+            // When active the map will receive updates to the device's location as it changes.
+            trackUserLocation: true,
+            // Draw an arrow next to the location dot to indicate which direction the device is heading.
+            showUserHeading: true
+        });
+        map.addControl(geolocate);
+        map.on('load', () => {
+            geolocate.trigger();
+        });
+
+
+    map.on('load', function() {
+map.addSource('lightship', {
+'type': 'geojson',
+'data': 'https://script.google.com/macros/s/AKfycbx33rqelrEBitNkV0VSV7jhKTiiQ29zJinrChUvBRf5NqPLkOg_wBUmvCklXPxa6g0V/exec'
+});
+ 
+
+
+map.addLayer({
+'id': "1st",
+'type': 'circle',
+'source': 'lightship',
+'paint': {
+'circle-radius': 6,
+'circle-color': '#3EA9FF'
+},
+'filter': ['==', 'flag', 1]
+});
+
+
+// Create a popup, but don't add it to the map yet.
+const popup = new mapboxgl.Popup({
+closeButton: false,
+closeOnClick: false
+});
+
+
+
+// When a click event occurs on a feature in the places layer, open a popup at the
+// location of the feature, with description HTML from its properties.
+map.on('click', "1st", function (e) {
+var coordinates = e.features[0].geometry.coordinates.slice();
+var description2 = e.features[0].properties.description2;
+ 
+// Ensure that if the map is zoomed out such that multiple
+// copies of the feature are visible, the popup appears
+// over the copy being pointed to.
+while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+}
+ 
+new mapboxgl.Popup()
+.setLngLat(coordinates)
+.setHTML(description2)
+.addTo(map);
+});
+
+////////////////////////////////////////////////////////////////////////////////
+map.on('mouseenter', '1st', (e) => {
+// Change the cursor style as a UI indicator.
+map.getCanvas().style.cursor = 'pointer';
+ 
+// Copy coordinates array.
+const coordinates = e.features[0].geometry.coordinates.slice();
+const description2 = e.features[0].properties.description2;
+ 
+// Ensure that if the map is zoomed out such that multiple
+// copies of the feature are visible, the popup appears
+// over the copy being pointed to.
+while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+}
+ 
+// Populate the popup and set its coordinates
+// based on the feature found.
+popup.setLngLat(coordinates).setHTML(description2).addTo(map);
+});
+ 
+map.on('mouseleave', '1st', () => {
+map.getCanvas().style.cursor = '';
+popup.remove();
+});
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+});
+
+
+
+</script>
+
+</body>
+</html>
